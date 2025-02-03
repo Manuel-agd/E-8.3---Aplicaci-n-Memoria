@@ -1,0 +1,80 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+.carta {
+  background-color: lightblue;
+  width: 100px;
+  height: 150px;
+  display: flex;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: rgba(0, 0, 0, 0.1);
+  background-size: cover;
+  cursor: pointer;
+}
+
+.volteada {
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.dorso {
+  background-color: gray;
+  border: 2px solid black;
+}
+
+.emparejada {
+  border: 2px solid green;
+  opacity: 0.7;
+}
+
+#btnNuevaPartida{
+  background-color: darkgreen;
+  border-radius: 15%;
+  cursor: pointer;
+  height:min-content;
+}
+
+#contenedorCartas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 150px);
+  gap: 10px;
+  padding: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #242424;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.mensaje-error {
+  color: red;
+  font-size: 16px;
+  text-align: center;
+  margin-top: 10px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
