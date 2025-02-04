@@ -3,7 +3,6 @@ import { inicializarJuego } from "./motor";
 import "./style.css"; 
 
 const btnNuevaPartida = document.getElementById("btnNuevaPartida");
-const contenedorCartas = document.getElementById("contenedorCartas");
 
 export let intentos = 0;
 

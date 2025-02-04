@@ -84,9 +84,9 @@ export const parejaNoEncontrada = (tablero: Tablero, indiceA: number, indiceB: n
 };
 
 export const voltearCarta = (tablero: Tablero, indice: number, actualizarIntentos: (intentos: number) => void): void => {
-    console.log("intentando voltear la carta indice:", indice);
+    /*console.log("intentando voltear la carta indice:", indice);
     console.log("Estado del tablero", tablero);
-    console.log("Numero de cartas en el tablero", tablero.cartas.length);
+    console.log("Numero de cartas en el tablero", tablero.cartas.length);*/
 
     if (sePuedeVoltearCarta(tablero, indice)){
         console.log("volteando carta:", tablero.cartas[indice]);
