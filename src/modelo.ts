@@ -11,12 +11,12 @@ export interface InfoCarta {
 }
 
 export const infoCartas: InfoCarta[] = [
-{ idFoto: 1, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/1.png"},
-{ idFoto: 2, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/2.png"},
-{ idFoto: 3, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/3.png"},
-{ idFoto: 4, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/4.png"},
-{ idFoto: 5, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/5.png"},
-{ idFoto: 6, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/6.png"},
+    { idFoto: 1, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/1.png" },
+    { idFoto: 2, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/2.png" },
+    { idFoto: 3, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/3.png" },
+    { idFoto: 4, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/4.png" },
+    { idFoto: 5, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/5.png" },
+    { idFoto: 6, imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/6.png" },
 ];
 
 export const crearCartaInicial = (idFoto: number, imagen: string): Carta => ({
@@ -27,19 +27,19 @@ export const crearCartaInicial = (idFoto: number, imagen: string): Carta => ({
 });
 
 export const coleccionInicialCartas = (infoCartas: InfoCarta[]): Carta[] => {
-    return infoCartas.reduce<Carta[]>((acc, carta) => {
-        acc.push(crearCartaInicial(carta.idFoto, carta.imagen));
-        acc.push(crearCartaInicial(carta.idFoto, carta.imagen));
-        return acc;
-    }, []);
+    const cartasTransformadas = infoCartas.map((infoCarta) => {
+        return crearCartaInicial(infoCarta.idFoto, infoCarta.imagen);
+    });
+
+    return [...cartasTransformadas, ...cartasTransformadas];
 };
 
-export type EstadoPartida = 
-|"partidaNoIniciada" 
-| "ceroCartasVolteadas" 
-| "unaCartaVolteada" 
-| "dosCartasVolteadas" 
-| "partidaCompleta";
+export type EstadoPartida =
+    | "partidaNoIniciada"
+    | "ceroCartasVolteadas"
+    | "unaCartaVolteada"
+    | "dosCartasVolteadas"
+    | "partidaCompleta";
 
 export interface Tablero {
     cartas: Carta[];
@@ -49,7 +49,7 @@ export interface Tablero {
     intentos: number;
 }
 
-export let cartas:Carta[] = coleccionInicialCartas(infoCartas);
+export let cartas: Carta[] = coleccionInicialCartas(infoCartas);
 
 export const reiniciarTablero = (): Tablero => ({
     cartas: coleccionInicialCartas(infoCartas),

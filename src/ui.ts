@@ -1,36 +1,36 @@
-import {Tablero, Carta} from "./modelo";
-import {sePuedeVoltearCarta, voltearCarta } from "./motor";
+import { Tablero, Carta, tablero } from "./modelo";
+import { esPartidaCompleta, parejaEncontrada, parejaNoEncontrada, sePuedeVoltearCarta, sonPareja, voltearCarta } from "./motor";
 import { actualizarIntentos } from "./main";
 
 const contenedor = document.getElementById("contenedorCartas");
-if(!contenedor){
+if (!contenedor) {
     console.error("el contenedor de cartas no fue encontrado en el DOM.")
 };
 
- /*Prueba para verificar que el contenedor de cartas se esta generando con las cartas
+/*Prueba para verificar que el contenedor de cartas se esta generando con las cartas
 
 if (contenedor) {
-    const divPrueba = document.createElement("div");
-    divPrueba.textContent = "Carta de prueba";
-    divPrueba.style.border = "1px solid red";
-    divPrueba.style.width = "100px";
-    divPrueba.style.height = "150px";
-    contenedor.appendChild(divPrueba);
+   const divPrueba = document.createElement("div");
+   divPrueba.textContent = "Carta de prueba";
+   divPrueba.style.border = "1px solid red";
+   divPrueba.style.width = "100px";
+   divPrueba.style.height = "150px";
+   contenedor.appendChild(divPrueba);
 };
 */
 export const actualizarUIcarta = (divCarta: HTMLElement | null, carta: Carta) => {
-    if(!divCarta) {
+    if (!divCarta) {
         console.error("Error: divCarta no encontrada para la carta", carta);
         return;
     }
     console.log("Actualizando carta", carta);
 
-    divCarta.classList.remove ("dorso", "volteada", "emparejada");
+    divCarta.classList.remove("dorso", "volteada", "emparejada");
 
-    if(carta.emparejada){
+    if (carta.emparejada) {
         divCarta.style.backgroundImage = `url(${carta.imagen})`;
         divCarta.classList.add("emparejada");
-    } else if(carta.estaVolteada){
+    } else if (carta.estaVolteada) {
         divCarta.style.backgroundImage = `url(${carta.imagen})`;
         divCarta.classList.add("volteada");
     } else {
@@ -41,12 +41,12 @@ export const actualizarUIcarta = (divCarta: HTMLElement | null, carta: Carta) =>
 
 export const mostrarMensajeError = (mensaje: string) => {
     const mensajeError = document.createElement("div");
-        mensajeError.textContent = mensaje;
-        mensajeError?.classList.add("mensaje-error");
-        document.body.appendChild(mensajeError);
-        setTimeout(() => {
-            mensajeError?.remove();
-        }, 2000);
+    mensajeError.textContent = mensaje;
+    mensajeError?.classList.add("mensaje-error");
+    document.body.appendChild(mensajeError);
+    setTimeout(() => {
+        mensajeError?.remove();
+    }, 2000);
 };
 
 export const actualizarUITablero = (tablero: Tablero): void => {
@@ -57,20 +57,45 @@ export const actualizarUITablero = (tablero: Tablero): void => {
     }
     contenedorCartas.innerHTML = "";
 
-tablero.cartas.forEach((carta: Carta, index: number) => {
-    const divCarta = document.createElement("div");
-    divCarta.classList.add("carta", "dorso");
-    divCarta.id = `carta-${index}`;
+    tablero.cartas.forEach((carta: Carta, index: number) => {
+        const divCarta = document.createElement("div");
+        divCarta.classList.add("carta", "dorso");
+        divCarta.id = `carta-${index}`;
 
-    divCarta.addEventListener("click",() => {
-        console.log(`Carta clickeada: índice ${index}`);
-        if (tablero.estadoPartida !== "partidaCompleta") {
-            if(sePuedeVoltearCarta(tablero, index)) {
-                voltearCarta(tablero, index,actualizarIntentos);
-                actualizarUIcarta(divCarta, tablero.cartas[index])
+        divCarta.addEventListener("click", () => {
+            if (sePuedeVoltearCarta(tablero, index)) {
+                voltearCarta(tablero, index, actualizarIntentos);
+                actualizarUIcarta(divCarta, tablero.cartas[index]);
+                saberSiEsLaSegundaCarta();
+            } else {
+                console.log('no se puede voltear la carta');
             }
-        }
-    });
+            // console.log(`Carta clickeada: índice ${index}`);
+            // if (tablero.estadoPartida !== "partidaCompleta") {
+            //     if(sePuedeVoltearCarta(tablero, index)) {
+            //         voltearCarta(tablero, index,actualizarIntentos);
+            //         actualizarUIcarta(divCarta, tablero.cartas[index])
+            //     }
+            // }
+        });
         contenedor?.appendChild(divCarta);
     });
 };
+
+const saberSiEsLaSegundaCarta = () => {
+    const indiceCartaA = tablero.indiceCartaVolteadaA;
+    const indiceCartaB = tablero.indiceCartaVolteadaB;
+
+    if (indiceCartaA !== undefined && indiceCartaB !== undefined) {
+        if (sonPareja(indiceCartaA, indiceCartaB, tablero)) {
+            parejaEncontrada(indiceCartaA, indiceCartaB, tablero);
+
+            if (esPartidaCompleta(tablero)) {
+                console.log('partida completa');
+            }
+        } else {
+            parejaNoEncontrada(tablero, indiceCartaA, indiceCartaB);
+            // que me volteen la carta para que vuelba a no aparecer la imagen.
+        }
+    }
+}

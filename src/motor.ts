@@ -2,12 +2,12 @@ import { Carta, Tablero } from "./modelo";
 import { actualizarUIcarta, mostrarMensajeError, actualizarUITablero } from "./ui"
 
 export const barajarCartas = (cartas: Carta[]): Carta[] => {
-    for (let i = cartas.length-1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i+1));
-        [cartas[i],cartas[j]] = [cartas[j],cartas[i]];
+    for (let i = cartas.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [{ ...cartas[i] }, { ...cartas[j] }] = [cartas[j], cartas[i]];
     }
     return cartas;
-  };
+};
 
 export const inicializarJuego = (tablero: Tablero, actualizarIntentos: (intentos: number) => void): void => {
     tablero.cartas = barajarCartas(tablero.cartas);
@@ -38,92 +38,109 @@ export const sePuedeVoltearCarta = (tablero: Tablero, indice: number): boolean =
     if (tablero.estadoPartida === "dosCartasVolteadas") {
         return false;
     }
-    
+
     return true;
 };
 
 export const sonPareja = (indiceA: number, indiceB: number, tablero: Tablero): boolean => {
-    if (
-        indiceA < 0 || indiceA > tablero.cartas.length ||
-        indiceB < 0 || indiceB > tablero.cartas.length
-    ) {
-        console.error ("Indices fuera de rango", indiceA , indiceB);
-        return false;
-    }
+    // if (
+    //     indiceA < 0 || indiceA > tablero.cartas.length ||
+    //     indiceB < 0 || indiceB > tablero.cartas.length
+    // ) {
+    //     console.error ("Indices fuera de rango", indiceA , indiceB);
+    //     return false;
+    // }
     return tablero.cartas[indiceA].idFoto === tablero.cartas[indiceB].idFoto;
 };
 
-export const parejaEncontrada =  (indiceA: number, indiceB: number, tablero: Tablero): void => {
+export const parejaEncontrada = (indiceA: number, indiceB: number, tablero: Tablero): void => {
     tablero.cartas[indiceA].emparejada = true;
     tablero.cartas[indiceB].emparejada = true;
-    tablero.estadoPartida = tablero.cartas.every(carta => carta.emparejada) ? "partidaCompleta" : "ceroCartasVolteadas";
+    tablero.indiceCartaVolteadaA = undefined;
+    tablero.indiceCartaVolteadaB = undefined;
+    tablero.estadoPartida = "ceroCartasVolteadas";
+    // tablero.estadoPartida = tablero.cartas.every(carta => carta.emparejada) ? "partidaCompleta" : "ceroCartasVolteadas";
 };
 
 export const parejaNoEncontrada = (tablero: Tablero, indiceA: number, indiceB: number): void => {
-    setTimeout(() => {
-        tablero.cartas[indiceA].estaVolteada = false;
-        tablero.cartas[indiceB].estaVolteada = false;
+    tablero.cartas[indiceA].estaVolteada = false;
+    tablero.cartas[indiceB].estaVolteada = false;
+    tablero.indiceCartaVolteadaA = undefined;
+    tablero.indiceCartaVolteadaB = undefined;
+    tablero.estadoPartida = "ceroCartasVolteadas";
+    // setTimeout(() => {
+    //     tablero.cartas[indiceA].estaVolteada = false;
+    //     tablero.cartas[indiceB].estaVolteada = false;
 
-        const divCartaA = document.querySelector(`#carta-${indiceA}`) as HTMLElement;
-        const divCartaB = document.querySelector(`#carta-${indiceB}`) as HTMLElement;
+    //     const divCartaA = document.querySelector(`#carta-${indiceA}`) as HTMLElement;
+    //     const divCartaB = document.querySelector(`#carta-${indiceB}`) as HTMLElement;
 
-        if(divCartaA) {
-            actualizarUIcarta(divCartaA, tablero.cartas[indiceA]);
-        } else {
-            console.warn("Elemento DOM para la carta-${indiceA} no encontrado")
-        }
-        if(divCartaB) {actualizarUIcarta(divCartaB, tablero.cartas[indiceB]);
-        } else {
-            console.warn("Elemento DOM para la carta-${indiceB} no encontrado")
-        }
+    //     if (divCartaA) {
+    //         actualizarUIcarta(divCartaA, tablero.cartas[indiceA]);
+    //     } else {
+    //         console.warn("Elemento DOM para la carta-${indiceA} no encontrado")
+    //     }
+    //     if (divCartaB) {
+    //         actualizarUIcarta(divCartaB, tablero.cartas[indiceB]);
+    //     } else {
+    //         console.warn("Elemento DOM para la carta-${indiceB} no encontrado")
+    //     }
 
-        tablero.indiceCartaVolteadaA = undefined;
-        tablero.indiceCartaVolteadaB = undefined;
-        tablero.estadoPartida = "ceroCartasVolteadas";
-    }, 1000)
+    //     tablero.indiceCartaVolteadaA = undefined;
+    //     tablero.indiceCartaVolteadaB = undefined;
+    //     tablero.estadoPartida = "ceroCartasVolteadas";
+    // }, 1000)
 };
 
 export const voltearCarta = (tablero: Tablero, indice: number, actualizarIntentos: (intentos: number) => void): void => {
     /*console.log("intentando voltear la carta indice:", indice);
     console.log("Estado del tablero", tablero);
     console.log("Numero de cartas en el tablero", tablero.cartas.length);*/
+    tablero.cartas[indice].estaVolteada = true;
 
-    if (sePuedeVoltearCarta(tablero, indice)){
-        console.log("volteando carta:", tablero.cartas[indice]);
-        tablero.cartas[indice].estaVolteada = true;
-
-        actualizarEstadoTablero(tablero, indice);
-        
-        if(tablero.estadoPartida === "dosCartasVolteadas") {
-            tablero.intentos += 1;
-            actualizarIntentos(tablero.intentos);
-
-            const indiceA = tablero.indiceCartaVolteadaA!;
-            const indiceB = tablero.indiceCartaVolteadaB!;
-
-            if (sonPareja(indiceA, indiceB, tablero)) {
-                parejaEncontrada(indiceA, indiceB, tablero);
-                if (esPartidaCompleta(tablero)) {
-                    tablero.estadoPartida = "partidaCompleta";
-                    console.log("¡Partida Completa!");
-                }
-            } else {
-                parejaNoEncontrada(tablero, indiceA, indiceB)
-            }
-        }
-    } else {
-        console.log("No puedes voltear esta carta");
-        mostrarMensajeError("No puedes voltear esta carta");
+    if (tablero.estadoPartida === 'ceroCartasVolteadas') {
+        tablero.indiceCartaVolteadaA = indice;
+        tablero.estadoPartida = 'unaCartaVolteada';
+    } else if (tablero.estadoPartida === "unaCartaVolteada") {
+        tablero.indiceCartaVolteadaB = indice;
+        tablero.estadoPartida = "dosCartasVolteadas";
     }
+    // if (sePuedeVoltearCarta(tablero, indice)) {
+    //     console.log("volteando carta:", tablero.cartas[indice]);
+    //     tablero.cartas[indice].estaVolteada = true;
+
+    //     actualizarEstadoTablero(tablero, indice);
+
+    //     if (tablero.estadoPartida === "dosCartasVolteadas") {
+    //         tablero.intentos += 1;
+    //         actualizarIntentos(tablero.intentos);
+
+    //         const indiceA = tablero.indiceCartaVolteadaA!;
+    //         const indiceB = tablero.indiceCartaVolteadaB!;
+
+    //         if (sonPareja(indiceA, indiceB, tablero)) {
+    //             parejaEncontrada(indiceA, indiceB, tablero);
+    //             if (esPartidaCompleta(tablero)) {
+    //                 tablero.estadoPartida = "partidaCompleta";
+    //                 console.log("¡Partida Completa!");
+    //             }
+    //         } else {
+    //             parejaNoEncontrada(tablero, indiceA, indiceB)
+    //         }
+    //     }
+    // } else {
+    //     console.log("No puedes voltear esta carta");
+    //     mostrarMensajeError("No puedes voltear esta carta");
+    // }
 };
 
 export const actualizarEstadoTablero = (tablero: Tablero, indice: number): void => {
-    if(tablero.estadoPartida === "ceroCartasVolteadas") {
+    if (tablero.estadoPartida === "ceroCartasVolteadas") {
         tablero.estadoPartida = "unaCartaVolteada";
         tablero.indiceCartaVolteadaA = indice;
     } else if (tablero.estadoPartida === "unaCartaVolteada") {
         tablero.estadoPartida = "dosCartasVolteadas";
-        tablero.indiceCartaVolteadaB = indice; 
+        tablero.indiceCartaVolteadaB = indice;
     }
 
     if (tablero.estadoPartida === "dosCartasVolteadas") {
@@ -136,7 +153,7 @@ export const actualizarEstadoTablero = (tablero: Tablero, indice: number): void 
         if (sonPareja(indiceA, indiceB, tablero)) {
             parejaEncontrada(indiceA, indiceB, tablero);
         } else {
-                parejaNoEncontrada(tablero, indiceA, indiceB);
+            parejaNoEncontrada(tablero, indiceA, indiceB);
         }
         //actualizarUIcarta(divCartaA, tablero.cartas[indiceA]);
         //actualizarUIcarta(divCartaB, tablero.cartas[indiceB]); ESTO PERTENECE A UI.ts
