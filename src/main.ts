@@ -1,5 +1,5 @@
 import { coleccionInicialCartas, reiniciarTablero, infoCartas, Tablero, Carta, } from "./modelo";
-import { inicializarJuego } from "./motor";
+import{ iniciarYActualizarUI } from "./ui"
 import "./style.css"; 
 
 const btnNuevaPartida = document.getElementById("btnNuevaPartida");
@@ -17,25 +17,10 @@ const cartasIniciales: Carta[] = coleccionInicialCartas(infoCartas);
 const tableroJuego: Tablero = reiniciarTablero();
 
 btnNuevaPartida?.addEventListener("click", () =>{
-    inicializarJuego(tableroJuego, actualizarIntentos);
+    iniciarYActualizarUI(tableroJuego, actualizarIntentos);
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    inicializarJuego(tableroJuego, actualizarIntentos); 
-
-    /*Pruebas con indices validos e invalidos
-
-    console.log("Prueba con indices validos");
-    voltearCarta(tableroJuego, 0, actualizarIntentos);
-
-    console.log("Prueba con indices invalidos");
-    voltearCarta(tableroJuego, -1, actualizarIntentos);
-
-    console.log("prueba con indice igual a la longitud del array");
-    voltearCarta(tableroJuego, 12, actualizarIntentos);
-
-    console.log("Prueba con indice mayor a la longitud del array");
-    voltearCarta(tableroJuego, 13, actualizarIntentos); */
-
+    iniciarYActualizarUI(tableroJuego, actualizarIntentos); 
 });
 

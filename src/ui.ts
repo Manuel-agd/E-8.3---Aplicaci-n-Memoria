@@ -1,5 +1,5 @@
 import { Tablero, Carta, tablero } from "./modelo";
-import { esPartidaCompleta, parejaEncontrada, parejaNoEncontrada, sePuedeVoltearCarta, sonPareja, voltearCarta } from "./motor";
+import { esPartidaCompleta, inicializarJuego, parejaEncontrada, parejaNoEncontrada, sePuedeVoltearCarta, sonPareja, voltearCarta } from "./motor";
 import { actualizarIntentos } from "./main";
 
 const contenedor = document.getElementById("contenedorCartas");
@@ -7,17 +7,6 @@ if (!contenedor) {
     console.error("el contenedor de cartas no fue encontrado en el DOM.")
 };
 
-/*Prueba para verificar que el contenedor de cartas se esta generando con las cartas
-
-if (contenedor) {
-   const divPrueba = document.createElement("div");
-   divPrueba.textContent = "Carta de prueba";
-   divPrueba.style.border = "1px solid red";
-   divPrueba.style.width = "100px";
-   divPrueba.style.height = "150px";
-   contenedor.appendChild(divPrueba);
-};
-*/
 export const actualizarUIcarta = (divCarta: HTMLElement | null, carta: Carta) => {
     if (!divCarta) {
         console.error("Error: divCarta no encontrada para la carta", carta);
@@ -64,7 +53,8 @@ export const actualizarUITablero = (tablero: Tablero): void => {
 
         divCarta.addEventListener("click", () => {
             if (sePuedeVoltearCarta(tablero, index)) {
-                voltearCarta(tablero, index, actualizarIntentos);
+                voltearCarta(tablero, index);
+                console.log(tablero);
                 actualizarUIcarta(divCarta, tablero.cartas[index]);
                 saberSiEsLaSegundaCarta();
             } else {
@@ -85,7 +75,7 @@ export const actualizarUITablero = (tablero: Tablero): void => {
 const saberSiEsLaSegundaCarta = () => {
     const indiceCartaA = tablero.indiceCartaVolteadaA;
     const indiceCartaB = tablero.indiceCartaVolteadaB;
-
+    console.log(indiceCartaB, indiceCartaA);
     if (indiceCartaA !== undefined && indiceCartaB !== undefined) {
         if (sonPareja(indiceCartaA, indiceCartaB, tablero)) {
             parejaEncontrada(indiceCartaA, indiceCartaB, tablero);
@@ -94,8 +84,20 @@ const saberSiEsLaSegundaCarta = () => {
                 console.log('partida completa');
             }
         } else {
+            console.log("Al menos llega a aqui");
             parejaNoEncontrada(tablero, indiceCartaA, indiceCartaB);
-            // que me volteen la carta para que vuelba a no aparecer la imagen.
+                setTimeout(() => {
+                const divCartaA = document.getElementById(`carta-${indiceCartaA}`);
+                const divCartaB = document.getElementById(`carta-${indiceCartaB}`);
+                actualizarUIcarta(divCartaA, tablero.cartas[indiceCartaA]);
+                actualizarUIcarta(divCartaB, tablero.cartas[indiceCartaB]);
+                actualizarUITablero(tablero);
+            }, 1500);
         }
     }
-}
+};
+
+export const iniciarYActualizarUI = (tablero: Tablero, actualizarIntentos:(intentos: number) => void): void => {
+    inicializarJuego(tablero, actualizarIntentos);
+    actualizarUITablero(tablero);
+};
